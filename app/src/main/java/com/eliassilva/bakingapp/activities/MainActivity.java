@@ -1,17 +1,20 @@
-package com.eliassilva.bakingapp;
+package com.eliassilva.bakingapp.activities;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
 
-import com.eliassilva.bakingapp.utilities.RecipeAdapter;
-import com.eliassilva.bakingapp.utilities.RecipeLoader;
+import com.eliassilva.bakingapp.R;
+import com.eliassilva.bakingapp.Recipe;
+import com.eliassilva.bakingapp.RecipeLoader;
+import com.eliassilva.bakingapp.adapters.RecipeAdapter;
 
 import java.util.List;
 
@@ -42,7 +45,11 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     @Override
     public void onClick(Recipe recipe) {
-        Toast.makeText(this, "Recipe clicked!", Toast.LENGTH_LONG).show();
+        Recipe recipeToSend = new Recipe(recipe.getRecipeName(), recipe.getNumberOfSteps(), recipe.getIngredients());
+        Intent intent = new Intent(MainActivity.this, RecipeDetailsActivity.class);
+        intent.putExtra("recipe", recipeToSend);
+        startActivity(intent);
+
     }
 
     @NonNull

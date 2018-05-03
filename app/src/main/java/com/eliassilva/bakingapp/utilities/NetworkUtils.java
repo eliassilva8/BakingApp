@@ -3,6 +3,7 @@ package com.eliassilva.bakingapp.utilities;
 import android.net.Uri;
 import android.util.Log;
 
+import com.eliassilva.bakingapp.Ingredient;
 import com.eliassilva.bakingapp.Recipe;
 
 import org.json.JSONArray;
@@ -35,11 +36,7 @@ public class NetworkUtils {
             InputStream in = urlConnection.getInputStream();
             Scanner scanner = new Scanner(in);
             scanner.useDelimiter("\\A");
-            StringBuilder response = new StringBuilder();
-            while (scanner.hasNext()) {
-                response.append(scanner.next());
-            }
-            return response.toString();
+            return scanner.hasNext() ? scanner.next() : null;
         } catch (MalformedURLException e) {
             throw new RuntimeException("Cannot create url: " + e);
         } catch (IOException e) {
@@ -52,18 +49,30 @@ public class NetworkUtils {
     public static List<Recipe> extractRecipesFromJson() {
         final String RECIPE_NAME = "name";
         final String RECIPE_STEPS = "steps";
+        final String RECIPE_INGREDIENTS = "ingredients";
+        final String INGREDIENT_NAME = "ingredient";
+        final String INGREDIENT_MEASURE = "measure";
+        final String INGREDIENT_QUANTITY = "quantity";
         List<Recipe> recipesList = new ArrayList<>();
 
         String response = getResponse();
-        Log.d("Response: ", response);
         try {
             JSONArray recipes = new JSONArray(response);
             for (int i = 0; i < recipes.length(); i++) {
                 JSONObject recipe = recipes.getJSONObject(i);
                 String name = recipe.optString(RECIPE_NAME);
                 JSONArray steps = recipe.getJSONArray(RECIPE_STEPS);
+                JSONArray ingredients = recipe.getJSONArray(RECIPE_INGREDIENTS);
+                List<Ingredient> ingredientsList = new ArrayList<>();
+                for (int j = 0; j < ingredients.length(); j++) {
+                    JSONObject ingredient = ingredients.getJSONObject(j);
+                    int ingredientQuantity = ingredient.optInt(INGREDIENT_QUANTITY);
+                    String ingredientMeasure = ingredient.optString(INGREDIENT_MEASURE);
+                    String ingredientName = ingredient.optString(INGREDIENT_NAME);
+                    ingredientsList.add(new Ingredient(ingredientName, ingredientMeasure, ingredientQuantity));
+                }
                 int numberOfSteps = steps.length();
-                recipesList.add(new Recipe(name, numberOfSteps));
+                recipesList.add(new Recipe(name, numberOfSteps, ingredientsList));
             }
         } catch (JSONException e) {
             throw new RuntimeException("Error trying to create JSON object: " + e);

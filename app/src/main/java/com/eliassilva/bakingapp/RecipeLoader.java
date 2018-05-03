@@ -1,4 +1,4 @@
-package com.eliassilva.bakingapp.utilities;
+package com.eliassilva.bakingapp;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.eliassilva.bakingapp.Recipe;
+import com.eliassilva.bakingapp.utilities.NetworkUtils;
 
 import java.util.List;
 

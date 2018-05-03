@@ -1,6 +1,5 @@
-package com.eliassilva.bakingapp.utilities;
+package com.eliassilva.bakingapp.adapters;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.eliassilva.bakingapp.Ingredient;
 import com.eliassilva.bakingapp.R;
 import com.eliassilva.bakingapp.Recipe;
 
@@ -21,10 +21,15 @@ import butterknife.ButterKnife;
  */
 public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
     private List<Recipe> mRecipesList;
-    final private RecipeAdapterOnClickHandler mOnClickHandler;
+    private List<Ingredient> mIngredientsList;
+    private RecipeAdapterOnClickHandler mOnClickHandler;
 
     public RecipeAdapter(RecipeAdapterOnClickHandler onClickHandler) {
         this.mOnClickHandler = onClickHandler;
+    }
+
+    public RecipeAdapter(List<Ingredient> ingredients) {
+        this.mIngredientsList = ingredients;
     }
 
     public interface RecipeAdapterOnClickHandler {
