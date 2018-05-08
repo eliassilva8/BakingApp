@@ -98,6 +98,14 @@ public class StepDetailsFragment extends Fragment{
         mExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector);
         mStepVideo.setPlayer(mExoPlayer);
 
+        int display_mode = getResources().getConfiguration().orientation;
+        if (display_mode == Configuration.ORIENTATION_LANDSCAPE) {
+            ViewGroup.LayoutParams params = mStepVideo.getLayoutParams();
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            mStepVideo.setLayoutParams(params);
+            mStepDescription.setVisibility(View.GONE);
+        }
+
         DefaultBandwidthMeter bandwidthMeter2 = new DefaultBandwidthMeter();
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getActivity(), Util.getUserAgent(getActivity(), getResources().getString(R.string.app_name)), bandwidthMeter2);
         MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri);

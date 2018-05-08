@@ -1,5 +1,6 @@
 package com.eliassilva.bakingapp.activities;
 
+import android.app.ActionBar;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,9 +21,17 @@ public class StepDetailsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_details);
+        int display_mode = getResources().getConfiguration().orientation;
+        if (display_mode == Configuration.ORIENTATION_LANDSCAPE) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+            getSupportActionBar().hide();
+        }
 
         final Step stepData = getIntent().getParcelableExtra("step");
         assert stepData != null;
+
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
