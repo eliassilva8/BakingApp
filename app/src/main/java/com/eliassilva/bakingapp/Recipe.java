@@ -13,11 +13,13 @@ public class Recipe implements Parcelable {
     private String mRecipeName;
     private int mNumberOfSteps;
     private List<Ingredient> mIngredients;
+    private List<Step> mSteps;
 
-    public Recipe(String recipeName, int numberOfSteps, List<Ingredient> ingredients) {
+    public Recipe(String recipeName, int numberOfSteps, List<Ingredient> ingredients, List<Step> steps) {
         this.mRecipeName = recipeName;
         this.mNumberOfSteps = numberOfSteps;
         this.mIngredients = ingredients;
+        this.mSteps = steps;
     }
 
     protected Recipe(Parcel in) {
@@ -27,6 +29,10 @@ public class Recipe implements Parcelable {
             mIngredients = new ArrayList<>();
         }
         in.readTypedList(mIngredients, Ingredient.CREATOR);
+        if (mSteps == null) {
+            mSteps = new ArrayList<>();
+        }
+        in.readTypedList(mSteps, Step.CREATOR);
     }
 
     public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
@@ -51,6 +57,7 @@ public class Recipe implements Parcelable {
         dest.writeString(mRecipeName);
         dest.writeInt(mNumberOfSteps);
         dest.writeTypedList(mIngredients);
+        dest.writeTypedList(mSteps);
     }
 
     public String getRecipeName() {
@@ -63,5 +70,9 @@ public class Recipe implements Parcelable {
 
     public List<Ingredient> getIngredients() {
         return mIngredients;
+    }
+
+    public List<Step> getSteps() {
+        return mSteps;
     }
 }

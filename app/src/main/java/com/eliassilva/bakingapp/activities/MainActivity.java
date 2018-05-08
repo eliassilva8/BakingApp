@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     @Override
     public void onClick(Recipe recipe) {
-        Recipe recipeToSend = new Recipe(recipe.getRecipeName(), recipe.getNumberOfSteps(), recipe.getIngredients());
+        Recipe recipeToSend = new Recipe(recipe.getRecipeName(), recipe.getNumberOfSteps(), recipe.getIngredients(), recipe.getSteps());
         Intent intent = new Intent(MainActivity.this, RecipeDetailsActivity.class);
         intent.putExtra("recipe", recipeToSend);
         startActivity(intent);

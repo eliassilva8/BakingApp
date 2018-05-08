@@ -20,11 +20,18 @@ public class RecipeDetailsActivity extends AppCompatActivity {
         final Recipe recipeData = getIntent().getParcelableExtra("recipe");
         assert recipeData != null;
 
-        RecipeDetailsFragment fragment = new RecipeDetailsFragment();
-        fragment.setIngredientsData(recipeData.getIngredients());
         FragmentManager fragmentManager = getSupportFragmentManager();
+
+        RecipeIngredientsFragment ingredientsFragment = new RecipeIngredientsFragment();
+        ingredientsFragment.setIngredientsData(recipeData.getIngredients());
         fragmentManager.beginTransaction()
-                .add(R.id.recipe_details_container, fragment)
+                .add(R.id.recipe_ingredients_container, ingredientsFragment)
+                .commit();
+
+        RecipeStepsFragment stepsFragment = new RecipeStepsFragment();
+        stepsFragment.setStepsData(recipeData.getSteps());
+        fragmentManager.beginTransaction()
+                .add(R.id.recipe_steps_container, stepsFragment)
                 .commit();
 
     }
