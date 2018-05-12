@@ -1,8 +1,15 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/default_margin"
-    android:orientation="vertical">
+    android:padding="@dimen/default_margin">
+
+    <TextView
+        android:id="@+id/widget_recipe_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="24sp" />
 
     <ListView
         android:id="@+id/widget_ingredient_list"
@@ -10,12 +17,9 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_margin="8dp"
-        android:background="#09C"
+        android:background="#ffffff"
         android:contentDescription="@string/appwidget_text"
-        android:text="@string/appwidget_text"
-        android:textColor="#ffffff"
-        android:textSize="24sp"
+        android:textSize="12sp"
         android:textStyle="bold|italic" />
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -23,9 +27,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:textColor="#ffffff"
         android:textStyle="bold"
         android:text="Ups!!!"
-        android:textSize="20sp" />
+        android:textSize="24sp" />
 
-</LinearLayout>
+</FrameLayout>

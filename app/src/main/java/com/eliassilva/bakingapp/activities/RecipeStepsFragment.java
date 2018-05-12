@@ -1,5 +1,6 @@
 package com.eliassilva.bakingapp.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,9 +23,27 @@ import butterknife.ButterKnife;
 /**
  * Created by Elias on 02/05/2018.
  */
-public class RecipeStepsFragment extends Fragment implements StepAdapter.StepAdapterOnClickHandler{
+public class RecipeStepsFragment extends Fragment implements StepAdapter.StepAdapterOnClickHandler {
     private List<Step> mSteps;
-    @BindView(R.id.steps_rv) RecyclerView mStepRecylerView;
+    @BindView(R.id.steps_rv)
+    RecyclerView mStepRecylerView;
+
+    OnStepClickListener mCallback;
+
+    public interface OnStepClickListener {
+        void onStepSelected(int position);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mCallback = (OnStepClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnStepClickListener");
+        }
+    }
 
     public RecipeStepsFragment() {
     }
@@ -40,8 +59,14 @@ public class RecipeStepsFragment extends Fragment implements StepAdapter.StepAda
         mStepRecylerView.setHasFixedSize(true);
         mStepRecylerView.setNestedScrollingEnabled(false);
 
-        StepAdapter mAdapter = new StepAdapter(mSteps, this);
+        final StepAdapter mAdapter = new StepAdapter(mSteps, this);
         mStepRecylerView.setAdapter(mAdapter);
+        mStepRecylerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCallback.onStepSelected(mStepRecylerView.getChildLayoutPosition(v));
+            }
+        });
         return rootView;
     }
 

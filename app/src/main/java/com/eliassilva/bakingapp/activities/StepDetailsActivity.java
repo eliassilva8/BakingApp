@@ -21,6 +21,8 @@ public class StepDetailsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_details);
+
+
         int display_mode = getResources().getConfiguration().orientation;
         if (display_mode == Configuration.ORIENTATION_LANDSCAPE) {
             View decorView = getWindow().getDecorView();

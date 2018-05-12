@@ -77,17 +77,22 @@ public class StepDetailsFragment extends Fragment{
         final View rootView = inflater.inflate(R.layout.fragment_step_details, container, false);
         ButterKnife.bind(this, rootView);
         mStepDescription.setText(mDescription);
-        initializePlayer(Uri.parse(mVideoUrl));
-
+        if (mVideoUrl.isEmpty() || mStepVideo == null) {
+            mStepVideo.setVisibility(View.GONE);
+        } else {
+            initializePlayer(Uri.parse(mVideoUrl));
+        }
         return rootView;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mExoPlayer.stop();
-        mExoPlayer.release();
-        mExoPlayer = null;
+        if (mExoPlayer != null) {
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
     }
 
     private void initializePlayer(Uri uri) {

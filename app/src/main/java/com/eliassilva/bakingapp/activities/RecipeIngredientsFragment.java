@@ -8,9 +8,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.eliassilva.bakingapp.Ingredient;
 import com.eliassilva.bakingapp.R;
+import com.eliassilva.bakingapp.RecipeWidgetProvider;
 import com.eliassilva.bakingapp.adapters.IngredientAdapter;
 
 import java.util.List;
