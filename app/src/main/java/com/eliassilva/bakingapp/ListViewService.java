@@ -15,6 +15,7 @@ public class ListViewService extends RemoteViewsService {
     private static Recipe mRecipe;
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
+        mRecipe = intent.getParcelableExtra("recipe");
         return new RecipeRemoteViewsFactory(this.getApplicationContext(), mRecipe);
     }
 }
