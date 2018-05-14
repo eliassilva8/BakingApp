@@ -3,6 +3,7 @@ package com.eliassilva.bakingapp;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -34,9 +35,20 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, getClass()));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_ingredient_list);
+
+    }
+
     private static RemoteViews getIngredientsRemoteView(Context context, Recipe recipe) {
+        Bundle b = new Bundle();
+        b.putParcelable("recipe", recipe);
         Intent intent = new Intent(context, ListViewService.class);
-        intent.putExtra("recipe", recipe);
+        intent.putExtra("bundle", b);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget_provider);
         views.setRemoteAdapter(R.id.widget_ingredient_list, intent);

@@ -12,11 +12,10 @@ import java.util.List;
  * Created by Elias on 09/05/2018.
  */
 public class ListViewService extends RemoteViewsService {
-    private static Recipe mRecipe;
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        mRecipe = intent.getParcelableExtra("recipe");
-        return new RecipeRemoteViewsFactory(this.getApplicationContext(), mRecipe);
+        Recipe recipe = intent.getBundleExtra("bundle").getParcelable("recipe");
+        return new RecipeRemoteViewsFactory(this.getApplicationContext(), recipe);
     }
 }
 
@@ -37,7 +36,7 @@ class RecipeRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
     @Override
     public void onDataSetChanged() {
-        mIngredients = mRecipe.getIngredients();
+        mIngredients = mRecipe != null ? mRecipe.getIngredients() : null;
     }
 
     @Override
@@ -56,7 +55,7 @@ class RecipeRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             return null;
         }
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.recipe_widget_item);
-        rv.setTextViewText(R.id.widget_recipe_name, mRecipe.getRecipeName());
+        //rv.setTextViewText(R.id.widget_recipe_name, mRecipe.getRecipeName());
         rv.setTextViewText(R.id.widget_ingredient_name, mIngredients.get(position).getName());
 
         Bundle extras = new Bundle();
