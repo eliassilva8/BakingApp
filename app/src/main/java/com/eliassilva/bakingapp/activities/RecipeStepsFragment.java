@@ -27,23 +27,7 @@ public class RecipeStepsFragment extends Fragment implements StepAdapter.StepAda
     private List<Step> mSteps;
     @BindView(R.id.steps_rv)
     RecyclerView mStepRecylerView;
-
-    OnStepClickListener mCallback;
-
-    public interface OnStepClickListener {
-        void onStepSelected(int position);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            mCallback = (OnStepClickListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement OnStepClickListener");
-        }
-    }
+    boolean mIsTwoPane;
 
     public RecipeStepsFragment() {
     }
@@ -53,6 +37,7 @@ public class RecipeStepsFragment extends Fragment implements StepAdapter.StepAda
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_recipe_steps, container, false);
         ButterKnife.bind(this, rootView);
+        mIsTwoPane = this.getArguments().getBoolean("is_two_pane");
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mStepRecylerView.setLayoutManager(layoutManager);
@@ -61,12 +46,6 @@ public class RecipeStepsFragment extends Fragment implements StepAdapter.StepAda
 
         final StepAdapter mAdapter = new StepAdapter(mSteps, this);
         mStepRecylerView.setAdapter(mAdapter);
-        mStepRecylerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.onStepSelected(mStepRecylerView.getChildLayoutPosition(v));
-            }
-        });
         return rootView;
     }
 
@@ -76,9 +55,16 @@ public class RecipeStepsFragment extends Fragment implements StepAdapter.StepAda
 
     @Override
     public void onClick(Step step) {
-        Step stepToSend = new Step(step.getShortDescription(), step.getDescription(), step.getVideoUrl());
-        Intent intent = new Intent(getActivity(), StepDetailsActivity.class);
-        intent.putExtra("step", stepToSend);
-        startActivity(intent);
+        if (mIsTwoPane) {
+
+            StepDetailsFragment stepsDetailsFragment = new StepDetailsFragment();
+            stepsDetailsFragment.setStepData(step);
+            getFragmentManager().beginTransaction().replace(R.id.recipe_steps_details_container, stepsDetailsFragment).commit();
+        } else {
+            Step stepToSend = new Step(step.getShortDescription(), step.getDescription(), step.getVideoUrl());
+            Intent intent = new Intent(getActivity(), StepDetailsActivity.class);
+            intent.putExtra("step", stepToSend);
+            startActivity(intent);
+        }
     }
 }

@@ -104,7 +104,7 @@ public class StepDetailsFragment extends Fragment{
         mStepVideo.setPlayer(mExoPlayer);
 
         int display_mode = getResources().getConfiguration().orientation;
-        if (display_mode == Configuration.ORIENTATION_LANDSCAPE) {
+        if (display_mode == Configuration.ORIENTATION_LANDSCAPE && !getResources().getBoolean(R.bool.isTablet)) {
             ViewGroup.LayoutParams params = mStepVideo.getLayoutParams();
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
             mStepVideo.setLayoutParams(params);

@@ -24,19 +24,20 @@ import butterknife.ButterKnife;
 /**
  * Created by Elias on 02/05/2018.
  */
-public class RecipeDetailsActivity extends AppCompatActivity implements RecipeStepsFragment.OnStepClickListener {
-    /*@BindView(R.id.two_pane)
-    ConstraintLayout mTwoPane;*/
+public class RecipeDetailsActivity extends AppCompatActivity {
+    ConstraintLayout mTwoPane;
     @BindView(R.id.send_to_widget_bt)
     Button mSendToWidget;
     private Recipe mRecipeData;
+    boolean mIsTwoPane;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_details);
-
         ButterKnife.bind(this);
+        mTwoPane = findViewById(R.id.two_pane);
+        mIsTwoPane = mTwoPane != null ? true : false;
         mRecipeData = getIntent().getParcelableExtra("recipe");
         assert mRecipeData != null;
 
@@ -56,18 +57,12 @@ public class RecipeDetailsActivity extends AppCompatActivity implements RecipeSt
         });
 
         RecipeStepsFragment stepsFragment = new RecipeStepsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("is_two_pane", mIsTwoPane);
+        stepsFragment.setArguments(bundle);
         stepsFragment.setStepsData(mRecipeData.getSteps());
         fragmentManager.beginTransaction()
                 .add(R.id.recipe_steps_container, stepsFragment)
                 .commit();
-    }
-
-    @Override
-    public void onStepSelected(int position) {
-        /*if (mTwoPane != null) {
-            StepDetailsFragment stepsDetailsFragment = new StepDetailsFragment();
-            stepsDetailsFragment.setStepData(mRecipeData.getSteps().get(position));
-            getSupportFragmentManager().beginTransaction().add(R.id.step_details_container, stepsDetailsFragment).commit();
-        }*/
     }
 }
