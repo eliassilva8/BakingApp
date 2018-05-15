@@ -46,12 +46,14 @@ public class NetworkUtils {
         final String RECIPE_NAME = "name";
         final String RECIPE_STEPS = "steps";
         final String RECIPE_INGREDIENTS = "ingredients";
+        final String RECIPE_IMAGE = "image";
         final String INGREDIENT_NAME = "ingredient";
         final String INGREDIENT_MEASURE = "measure";
         final String INGREDIENT_QUANTITY = "quantity";
         final String STEP_SHORT_DESCRIPTION = "shortDescription";
         final String STEP_DESCRIPTION = "description";
         final String STEP_VIDEO_URL = "videoURL";
+        final String STEP_IMAGE_URL = "thumbnailURL";
         List<Recipe> recipesList = new ArrayList<>();
 
         String response = getResponse();
@@ -60,6 +62,7 @@ public class NetworkUtils {
             for (int i = 0; i < recipes.length(); i++) {
                 JSONObject recipe = recipes.getJSONObject(i);
                 String name = recipe.optString(RECIPE_NAME);
+                String recipeImage = recipe.optString(RECIPE_IMAGE);
 
                 JSONArray ingredients = recipe.getJSONArray(RECIPE_INGREDIENTS);
                 List<Ingredient> ingredientsList = new ArrayList<>();
@@ -78,11 +81,12 @@ public class NetworkUtils {
                     String stepShortDescription = step.optString(STEP_SHORT_DESCRIPTION);
                     String stepDescription = step.optString(STEP_DESCRIPTION);
                     String stepVideoUrl = step.optString(STEP_VIDEO_URL);
-                    stepsList.add(new Step(stepShortDescription, stepDescription, stepVideoUrl));
+                    String stepImageUrl = step.optString(STEP_IMAGE_URL);
+                    stepsList.add(new Step(stepShortDescription, stepDescription, stepVideoUrl, stepImageUrl));
                 }
 
                 int numberOfSteps = steps.length();
-                recipesList.add(new Recipe(name, numberOfSteps, ingredientsList, stepsList));
+                recipesList.add(new Recipe(name, numberOfSteps, recipeImage, ingredientsList, stepsList));
             }
         } catch (JSONException e) {
             throw new RuntimeException("Error trying to create JSON object: " + e);

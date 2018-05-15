@@ -6,12 +6,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.Rec
 
     @Override
     public void onClick(Recipe recipe) {
-        Recipe recipeToSend = new Recipe(recipe.getRecipeName(), recipe.getNumberOfSteps(), recipe.getIngredients(), recipe.getSteps());
+        Recipe recipeToSend = new Recipe(recipe.getRecipeName(), recipe.getNumberOfSteps(), recipe.getImageUrl(), recipe.getIngredients(), recipe.getSteps());
         Intent intent = new Intent(MainActivity.this, RecipeDetailsActivity.class);
         intent.putExtra("recipe", recipeToSend);
         startActivity(intent);

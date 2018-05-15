@@ -3,42 +3,28 @@ package com.eliassilva.bakingapp.activities;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
 
-import com.eliassilva.bakingapp.Ingredient;
 import com.eliassilva.bakingapp.R;
 import com.eliassilva.bakingapp.Step;
-import com.eliassilva.bakingapp.adapters.IngredientAdapter;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.BandwidthMeter;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
-
-import java.util.List;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,13 +38,19 @@ public class StepDetailsFragment extends Fragment{
     PlayerView mStepVideo;
     @BindView(R.id.step_description_tv)
     TextView mStepDescription;
+    @BindView(R.id.step_image_iv)
+    ImageView mStepImage;
     SimpleExoPlayer mExoPlayer;
     String mDescription;
     String mVideoUrl;
+    String mImageUrl;
+    Long mVideoPosition;
     public static final String DESCRIPTION = "description";
     public static final String VIDEO_URL = "video_url";
-
-
+    private static final String VIDEO_POSITION = "video_position";
+    private static final String IMAGE_URL = "image_url";
+    private boolean mPlayWhenReady = true;
+    private int mCurrentWindow;
 
     public StepDetailsFragment() {
     }
@@ -69,61 +61,92 @@ public class StepDetailsFragment extends Fragment{
         if (savedInstanceState != null) {
             mDescription = savedInstanceState.getString(DESCRIPTION);
             mVideoUrl = savedInstanceState.getString(VIDEO_URL);
+            mImageUrl = savedInstanceState.getString(IMAGE_URL);
+            mVideoPosition = savedInstanceState.getLong(VIDEO_POSITION);
         } else {
            mDescription = mStep.getDescription();
            mVideoUrl = mStep.getVideoUrl();
+            mImageUrl = mStep.getImageUrl();
+            mVideoPosition = C.TIME_UNSET;
         }
 
         final View rootView = inflater.inflate(R.layout.fragment_step_details, container, false);
         ButterKnife.bind(this, rootView);
-        mStepDescription.setText(mDescription);
-        if (mVideoUrl.isEmpty() || mStepVideo == null) {
+
+        int display_mode = getResources().getConfiguration().orientation;
+        if (display_mode == Configuration.ORIENTATION_LANDSCAPE && !getResources().getBoolean(R.bool.isTablet)) {
+            mStepDescription.setVisibility(View.GONE);
+            mStepVideo.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        } else {
+            mStepDescription.setText(mDescription);
+        }
+        if (mVideoUrl.isEmpty() || mVideoUrl == null) {
             mStepVideo.setVisibility(View.GONE);
         } else {
-            initializePlayer(Uri.parse(mVideoUrl));
+            initializePlayer();
+        }
+        if (mImageUrl.isEmpty() || mImageUrl == null) {
+            mStepImage.setVisibility(View.GONE);
+        } else {
+            Picasso.get().load(mImageUrl).into(mStepImage);
         }
         return rootView;
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mExoPlayer != null) {
-            mExoPlayer.stop();
-            mExoPlayer.release();
-            mExoPlayer = null;
-        }
+    public void onStart() {
+        super.onStart();
+        initializePlayer();
     }
 
-    private void initializePlayer(Uri uri) {
-        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-        TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
-        TrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
+    @Override
+    public void onStop() {
+        super.onStop();
+        releasePlayer();
+    }
 
-        mExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector);
+    private void initializePlayer() {
+        mExoPlayer = ExoPlayerFactory.newSimpleInstance(
+                new DefaultRenderersFactory(getActivity()),
+                new DefaultTrackSelector(),
+                new DefaultLoadControl());
+
         mStepVideo.setPlayer(mExoPlayer);
+        mExoPlayer.seekTo(mCurrentWindow, mVideoPosition);
+        mExoPlayer.setPlayWhenReady(mPlayWhenReady);
 
-        int display_mode = getResources().getConfiguration().orientation;
-        if (display_mode == Configuration.ORIENTATION_LANDSCAPE && !getResources().getBoolean(R.bool.isTablet)) {
-            ViewGroup.LayoutParams params = mStepVideo.getLayoutParams();
-            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            mStepVideo.setLayoutParams(params);
-            mStepDescription.setVisibility(View.GONE);
-        }
+        MediaSource videoSource = new ExtractorMediaSource.Factory(
+                new DefaultHttpDataSourceFactory(getResources().getString(R.string.app_name)))
+                .createMediaSource(Uri.parse(mVideoUrl));
 
-        DefaultBandwidthMeter bandwidthMeter2 = new DefaultBandwidthMeter();
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getActivity(), Util.getUserAgent(getActivity(), getResources().getString(R.string.app_name)), bandwidthMeter2);
-        MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri);
-        mExoPlayer.prepare(videoSource);
+        mExoPlayer.prepare(videoSource, false, false);
     }
 
     public void setStepData(Step step) {
         mStep = step;
     }
 
+    private void releasePlayer() {
+        if (mExoPlayer != null) {
+            mVideoPosition = mExoPlayer.getCurrentPosition();
+            mCurrentWindow = mExoPlayer.getCurrentWindowIndex();
+            mPlayWhenReady = mExoPlayer.getPlayWhenReady();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.putString(DESCRIPTION, mDescription);
         outState.putString(VIDEO_URL, mVideoUrl);
+        outState.putLong(VIDEO_POSITION, mVideoPosition);
+        outState.putString(IMAGE_URL, mImageUrl);
     }
 }

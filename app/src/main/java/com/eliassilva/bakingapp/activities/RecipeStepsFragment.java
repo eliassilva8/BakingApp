@@ -1,6 +1,5 @@
 package com.eliassilva.bakingapp.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -56,12 +55,11 @@ public class RecipeStepsFragment extends Fragment implements StepAdapter.StepAda
     @Override
     public void onClick(Step step) {
         if (mIsTwoPane) {
-
             StepDetailsFragment stepsDetailsFragment = new StepDetailsFragment();
             stepsDetailsFragment.setStepData(step);
             getFragmentManager().beginTransaction().replace(R.id.recipe_steps_details_container, stepsDetailsFragment).commit();
         } else {
-            Step stepToSend = new Step(step.getShortDescription(), step.getDescription(), step.getVideoUrl());
+            Step stepToSend = new Step(step.getShortDescription(), step.getDescription(), step.getVideoUrl(), step.getImageUrl());
             Intent intent = new Intent(getActivity(), StepDetailsActivity.class);
             intent.putExtra("step", stepToSend);
             startActivity(intent);

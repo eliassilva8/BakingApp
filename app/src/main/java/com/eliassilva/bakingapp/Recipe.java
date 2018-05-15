@@ -12,12 +12,14 @@ import java.util.List;
 public class Recipe implements Parcelable {
     private String mRecipeName;
     private int mNumberOfSteps;
+    private String mImageUrl;
     private List<Ingredient> mIngredients;
     private List<Step> mSteps;
 
-    public Recipe(String recipeName, int numberOfSteps, List<Ingredient> ingredients, List<Step> steps) {
+    public Recipe(String recipeName, int numberOfSteps, String imageUrl, List<Ingredient> ingredients, List<Step> steps) {
         this.mRecipeName = recipeName;
         this.mNumberOfSteps = numberOfSteps;
+        this.mImageUrl = imageUrl;
         this.mIngredients = ingredients;
         this.mSteps = steps;
     }
@@ -25,6 +27,7 @@ public class Recipe implements Parcelable {
     protected Recipe(Parcel in) {
         mRecipeName = in.readString();
         mNumberOfSteps = in.readInt();
+        mImageUrl = in.readString();
         if (mIngredients == null) {
             mIngredients = new ArrayList<>();
         }
@@ -56,6 +59,7 @@ public class Recipe implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mRecipeName);
         dest.writeInt(mNumberOfSteps);
+        dest.writeString(mImageUrl);
         dest.writeTypedList(mIngredients);
         dest.writeTypedList(mSteps);
     }
@@ -74,5 +78,9 @@ public class Recipe implements Parcelable {
 
     public List<Step> getSteps() {
         return mSteps;
+    }
+
+    public String getImageUrl() {
+        return mImageUrl;
     }
 }

@@ -1,9 +1,6 @@
 package com.eliassilva.bakingapp.activities;
 
 
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -12,11 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.eliassilva.bakingapp.ListViewService;
 import com.eliassilva.bakingapp.R;
 import com.eliassilva.bakingapp.Recipe;
 import com.eliassilva.bakingapp.RecipeService;
-import com.eliassilva.bakingapp.RecipeWidgetProvider;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,6 +30,7 @@ public class RecipeDetailsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_details);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
         mTwoPane = findViewById(R.id.two_pane);
         mIsTwoPane = mTwoPane != null ? true : false;

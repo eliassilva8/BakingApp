@@ -5,11 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.eliassilva.bakingapp.Ingredient;
 import com.eliassilva.bakingapp.R;
 import com.eliassilva.bakingapp.Recipe;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -41,11 +42,18 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
     @Override
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, int position) {
+        Recipe currentRecipe = mRecipesList.get(position);
         TextView recipeName = holder.mRecipeNameView;
         TextView numberOfSteps = holder.mNumberOfStepsView;
-        recipeName.setText(mRecipesList.get(position).getRecipeName());
+        ImageView recipeImage = holder.mRecipeImage;
+        recipeName.setText(currentRecipe.getRecipeName());
         String numberOfStepsString = String.valueOf(mRecipesList.get(position).getNumberOfSteps());
         numberOfSteps.setText(numberOfStepsString);
+        if (currentRecipe.getImageUrl().isEmpty() || currentRecipe.getImageUrl() == null) {
+            recipeImage.setVisibility(View.GONE);
+        } else {
+            Picasso.get().load(currentRecipe.getImageUrl()).into(recipeImage);
+        }
     }
 
     @Override
@@ -63,6 +71,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         TextView mRecipeNameView;
         @BindView(R.id.number_of_steps_tv)
         TextView mNumberOfStepsView;
+        @BindView(R.id.recipe_image_iv)
+        ImageView mRecipeImage;
 
         public RecipeViewHolder(View itemView) {
             super(itemView);
