@@ -22,10 +22,12 @@ public class StepDetailsActivity extends AppCompatActivity {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        StepDetailsFragment stepFragment = new StepDetailsFragment();
-        stepFragment.setStepData(stepData);
-        fragmentManager.beginTransaction()
-                .add(R.id.step_details_container, stepFragment)
-                .commit();
+        if (savedInstanceState == null) {
+            StepDetailsFragment stepFragment = new StepDetailsFragment();
+            stepFragment.setStepData(stepData);
+            fragmentManager.beginTransaction()
+                    .add(R.id.step_details_container, stepFragment)
+                    .commit();
+        }
     }
 }

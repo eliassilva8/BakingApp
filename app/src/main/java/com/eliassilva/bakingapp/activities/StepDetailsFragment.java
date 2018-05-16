@@ -24,6 +24,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -32,7 +33,7 @@ import butterknife.ButterKnife;
 /**
  * Created by Elias on 02/05/2018.
  */
-public class StepDetailsFragment extends Fragment{
+public class StepDetailsFragment extends Fragment {
     private Step mStep;
     @BindView(R.id.step_video)
     PlayerView mStepVideo;
@@ -64,8 +65,8 @@ public class StepDetailsFragment extends Fragment{
             mImageUrl = savedInstanceState.getString(IMAGE_URL);
             mVideoPosition = savedInstanceState.getLong(VIDEO_POSITION);
         } else {
-           mDescription = mStep.getDescription();
-           mVideoUrl = mStep.getVideoUrl();
+            mDescription = mStep.getDescription();
+            mVideoUrl = mStep.getVideoUrl();
             mImageUrl = mStep.getImageUrl();
             mVideoPosition = C.TIME_UNSET;
         }
@@ -88,7 +89,7 @@ public class StepDetailsFragment extends Fragment{
         if (mVideoUrl.isEmpty() || mVideoUrl == null) {
             mStepVideo.setVisibility(View.GONE);
         } else {
-            initializePlayer();
+            //initializePlayer();
         }
         if (mImageUrl.isEmpty() || mImageUrl == null) {
             mStepImage.setVisibility(View.GONE);
@@ -101,13 +102,33 @@ public class StepDetailsFragment extends Fragment{
     @Override
     public void onStart() {
         super.onStart();
-        initializePlayer();
+        if (Util.SDK_INT > 23) {
+            initializePlayer();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if ((Util.SDK_INT <= 23 || mExoPlayer == null)) {
+            initializePlayer();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        releasePlayer();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
     }
 
     private void initializePlayer() {
@@ -136,6 +157,7 @@ public class StepDetailsFragment extends Fragment{
             mVideoPosition = mExoPlayer.getCurrentPosition();
             mCurrentWindow = mExoPlayer.getCurrentWindowIndex();
             mPlayWhenReady = mExoPlayer.getPlayWhenReady();
+            mExoPlayer.stop();
             mExoPlayer.release();
             mExoPlayer = null;
         }
@@ -144,6 +166,7 @@ public class StepDetailsFragment extends Fragment{
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        releasePlayer();
         outState.putString(DESCRIPTION, mDescription);
         outState.putString(VIDEO_URL, mVideoUrl);
         outState.putLong(VIDEO_POSITION, mVideoPosition);
