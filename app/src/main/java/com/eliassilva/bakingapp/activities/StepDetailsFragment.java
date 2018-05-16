@@ -50,6 +50,7 @@ public class StepDetailsFragment extends Fragment {
     public static final String VIDEO_URL = "video_url";
     private static final String VIDEO_POSITION = "video_position";
     private static final String IMAGE_URL = "image_url";
+    private static final String VIDEO_STATE = "video_state";
     private boolean mPlayWhenReady = true;
     private int mCurrentWindow;
 
@@ -64,11 +65,13 @@ public class StepDetailsFragment extends Fragment {
             mVideoUrl = savedInstanceState.getString(VIDEO_URL);
             mImageUrl = savedInstanceState.getString(IMAGE_URL);
             mVideoPosition = savedInstanceState.getLong(VIDEO_POSITION);
+            mPlayWhenReady = savedInstanceState.getBoolean(VIDEO_STATE);
         } else {
             mDescription = mStep.getDescription();
             mVideoUrl = mStep.getVideoUrl();
             mImageUrl = mStep.getImageUrl();
             mVideoPosition = C.TIME_UNSET;
+            mPlayWhenReady = true;
         }
 
         final View rootView = inflater.inflate(R.layout.fragment_step_details, container, false);
@@ -88,8 +91,6 @@ public class StepDetailsFragment extends Fragment {
         }
         if (mVideoUrl.isEmpty() || mVideoUrl == null) {
             mStepVideo.setVisibility(View.GONE);
-        } else {
-            //initializePlayer();
         }
         if (mImageUrl.isEmpty() || mImageUrl == null) {
             mStepImage.setVisibility(View.GONE);
@@ -171,5 +172,6 @@ public class StepDetailsFragment extends Fragment {
         outState.putString(VIDEO_URL, mVideoUrl);
         outState.putLong(VIDEO_POSITION, mVideoPosition);
         outState.putString(IMAGE_URL, mImageUrl);
+        outState.putBoolean(VIDEO_STATE, mPlayWhenReady);
     }
 }
